@@ -122,7 +122,7 @@ const S = {
     padding: "16px 32px", background: "#57534e", color: "#ffffff",
     fontSize: "12px", letterSpacing: "0.15em", textAlign: "center" as const,
     textDecoration: "none", fontFamily: "'Noto Serif JP', serif",
-    cursor: "pointer",
+    cursor: "pointer", boxSizing: "border-box" as const,
   },
   btnRetry: { fontSize: "11px", color: "#a8a29e", letterSpacing: "0.15em", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", fontFamily: "'Noto Serif JP', serif" },
   footer: { marginTop: "64px", fontSize: "11px", color: "#d6d3d1", letterSpacing: "0.15em" },
@@ -138,22 +138,35 @@ function FadeIn({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
   );
 }
 
+const SEED_IMAGES: Record<FlowerKey, string> = {
+  kabocha:      "https://res.cloudinary.com/ddr0h170h/image/upload/v1780895399/%E3%81%8B%E3%81%BC%E3%81%A1%E3%82%83_uhpzai.png",
+  himawari:     "https://res.cloudinary.com/ddr0h170h/image/upload/v1780894739/11_IMG_1886_dynema.jpg",
+  toumorokoshi: "https://res.cloudinary.com/ddr0h170h/image/upload/v1780895405/%E3%81%A8%E3%81%86%E3%82%82%E3%82%8D%E3%81%93%E3%81%97_jvzqli.png",
+  benibana:     "https://res.cloudinary.com/ddr0h170h/image/upload/v1780895399/%E3%81%B9%E3%81%AB%E3%81%B0%E3%81%AA_wdq5z9.png",
+  coffee:       "https://res.cloudinary.com/ddr0h170h/image/upload/v1780895399/%E3%82%B3%E3%83%BC%E3%83%92%E3%83%BC%E8%B1%86%EF%BC%92_p33izr.jpg",
+};
+
 function SeedShape({ flowerKey }: { flowerKey: FlowerKey }) {
-  const shapes: Record<FlowerKey, React.ReactElement> = {
-    kabocha: <svg width="72" height="72" viewBox="0 0 80 80" fill="none"><ellipse cx="40" cy="40" rx="28" ry="34" stroke="#a8a29e" strokeWidth="1" fill="#fafaf9" /><ellipse cx="40" cy="40" rx="14" ry="20" stroke="#d6d3d1" strokeWidth="0.8" fill="none" /><line x1="40" y1="8" x2="40" y2="72" stroke="#e7e5e4" strokeWidth="0.8" /></svg>,
-    himawari: <svg width="72" height="72" viewBox="0 0 80 80" fill="none">{[0,45,90,135].map(d=><line key={d} x1="40" y1="10" x2="40" y2="70" stroke="#d6d3d1" strokeWidth="0.8" transform={`rotate(${d} 40 40)`}/>)}<ellipse cx="40" cy="40" rx="16" ry="22" stroke="#a8a29e" strokeWidth="1" fill="#fafaf9" /><circle cx="40" cy="40" r="4" fill="#d6d3d1" /></svg>,
-    toumorokoshi: <svg width="72" height="72" viewBox="0 0 80 80" fill="none">{([[32,20],[40,20],[48,20],[28,30],[36,30],[44,30],[52,30],[28,40],[36,40],[44,40],[52,40],[32,50],[40,50],[48,50],[36,60],[44,60]] as [number,number][]).map(([cx,cy],i)=><ellipse key={i} cx={cx} cy={cy} rx="5" ry="6" stroke="#a8a29e" strokeWidth="0.8" fill="#fafaf9"/>)}</svg>,
-    benibana: <svg width="72" height="72" viewBox="0 0 80 80" fill="none"><path d="M40 10 C30 25 25 40 40 70 C55 40 50 25 40 10Z" stroke="#a8a29e" strokeWidth="1" fill="#fafaf9" /><path d="M40 20 C35 35 34 50 40 65 C46 50 45 35 40 20Z" stroke="#d6d3d1" strokeWidth="0.7" fill="none" /></svg>,
-    coffee: <svg width="72" height="72" viewBox="0 0 80 80" fill="none"><ellipse cx="40" cy="40" rx="22" ry="28" stroke="#a8a29e" strokeWidth="1" fill="#fafaf9" /><path d="M40 14 Q46 40 40 66" stroke="#d6d3d1" strokeWidth="1" fill="none" /></svg>,
-  };
-  return shapes[flowerKey];
+  return (
+    <div style={{
+      width: "80px", height: "80px", borderRadius: "50%",
+      overflow: "hidden", border: "1px solid #e7e5e4",
+      margin: "0 auto",
+    }}>
+      <img
+        src={SEED_IMAGES[flowerKey]}
+        alt={flowerKey}
+        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+      />
+    </div>
+  );
 }
 
 function TopScreen({ onStart }: { onStart: () => void }) {
   return (
     <div style={S.page}>
       <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet" />
-      <FadeIn delay={100}><p style={S.label}>toccorri / tanehana</p></FadeIn>
+      <FadeIn delay={100}><p style={{...S.label, textTransform: "lowercase"}}>toccorri / tanehana</p></FadeIn>
       <FadeIn delay={300}><h1 style={S.h1}>種花診断</h1></FadeIn>
       <FadeIn delay={500}>
         <div style={S.divider} />
@@ -173,7 +186,6 @@ function QuestionScreen({ step, usage, onSelectUsage, onSelectMood }: { step: nu
   return (
     <div style={S.page}>
       <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet" />
-      <FadeIn delay={0}><div style={{ display: "flex", marginBottom: "48px" }}>{[1,2].map(n=><div key={n} style={S.progress(n<=step)}/>)}</div></FadeIn>
       <FadeIn delay={150}>
         <p style={S.qLabel}>Question {step} / 2</p>
         <h2 style={S.h2}>{q}</h2>
